@@ -1,0 +1,3 @@
+ - Try to find a half cell character, change it's color and improve the resolution twice.
+ - Make sure the grey scale remains grayscale in the terminal
+ - Get terminal cell ratio automatically 
