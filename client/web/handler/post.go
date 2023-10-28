@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/igorkichuk/tucows/client/web/controller"
+	"github.com/igorkichuk/tucows/client/web/display"
 	"net/http"
 	"strconv"
 
@@ -28,20 +29,30 @@ func NewPostHandler(c controller.PostController) PostHandler {
 func (h PostHandler) ShowRandomPost(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	grayscale, key := getPostParams(req)
+	imgC := make(chan display.StringApiRes)
+	qtC := make(chan display.StringApiRes)
+	go h.getImg(grayscale, imgC)
+	go h.getQuote(key, qtC)
+
+	display.PrintPostRes(h.l, w, <-imgC)
+	display.PrintPostRes(h.l, w, <-qtC)
+}
+
+func (h PostHandler) getImg(grayscale bool, resC chan<- display.StringApiRes) {
 	url, err := h.c.GetImg(grayscale)
 	if err != nil {
-		h.l.Logln(err)
-		h.l.Flog(w, "<p>img is not available</p>")
+		resC <- display.StringApiRes{Err: err, Res: "<p>img is not available</p>"}
 	} else {
-		h.l.Flog(w, "<img src='"+url+"'><br>")
+		resC <- display.StringApiRes{Res: "<img src='" + url + "'><br>"}
 	}
+}
 
+func (h PostHandler) getQuote(key int, resC chan<- display.StringApiRes) {
 	qt, err := h.c.GetQuote(key)
 	if err != nil {
-		h.l.Logln(err)
-		h.l.Flog(w, "<p>quote is not available</p>")
+		resC <- display.StringApiRes{Err: err, Res: "<p>quote is not available</p>"}
 	} else {
-		h.l.Flog(w, qt)
+		resC <- display.StringApiRes{Res: qt}
 	}
 }
 
