@@ -8,6 +8,7 @@ import (
 
 	"github.com/igorkichuk/tucows/client/cli/controller"
 	"github.com/igorkichuk/tucows/client/cli/display"
+	"github.com/igorkichuk/tucows/common"
 )
 
 func TestPostHandler_ShowRandomPost(t *testing.T) {
@@ -97,7 +98,7 @@ func TestPostHandler_ShowRandomPost(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			l := display.NewLoggerMock()
+			l := common.NewLoggerMock()
 			h := PostHandler{
 				c: tt.c,
 				d: tt.d,
@@ -106,7 +107,7 @@ func TestPostHandler_ShowRandomPost(t *testing.T) {
 			h.ShowRandomPost(true, 120, 10)
 			s := l.GetLog()
 			if s != tt.exp {
-				t.Errorf("GetDisplayString() exp: %s; got: %s", tt.exp, s)
+				t.Errorf("ShowRandomPost() exp: %s; got: %s", tt.exp, s)
 			}
 		})
 	}

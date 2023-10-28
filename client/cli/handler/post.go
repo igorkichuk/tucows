@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/igorkichuk/tucows/client/cli/display"
+	"github.com/igorkichuk/tucows/common"
 )
 
 type postController interface {
@@ -17,7 +18,7 @@ type imgDisplay interface {
 }
 
 type PostHandler struct {
-	l display.Logger
+	l common.Logger
 	c postController
 	d imgDisplay
 }
@@ -26,7 +27,7 @@ func NewPostHandler(c postController) PostHandler {
 	return PostHandler{
 		c: c,
 		d: display.ImgDisplay{},
-		l: display.Lgr{},
+		l: common.DefaultLogger,
 	}
 }
 
@@ -36,8 +37,8 @@ func (h PostHandler) ShowRandomPost(grayscale bool, termWidth int, key int) {
 	go h.getImg(grayscale, termWidth, imgC)
 	go h.getQuote(key, qtC)
 
-	h.l.Log(<-imgC)
-	h.l.Log(<-qtC)
+	h.l.Logln(<-imgC)
+	h.l.Logln(<-qtC)
 }
 
 func (h PostHandler) getImg(grayscale bool, termWidth int, resC chan<- interface{}) {

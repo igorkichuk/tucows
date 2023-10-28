@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/igorkichuk/tucows/client/web/controller"
 	"net/http"
 	"strconv"
@@ -16,11 +15,13 @@ type postController interface {
 
 type PostHandler struct {
 	c postController
+	l common.Logger
 }
 
 func NewPostHandler(c controller.PostController) PostHandler {
 	return PostHandler{
 		c: c,
+		l: common.DefaultLogger,
 	}
 }
 
@@ -29,18 +30,18 @@ func (h PostHandler) ShowRandomPost(w http.ResponseWriter, req *http.Request) {
 	grayscale, key := getPostParams(req)
 	url, err := h.c.GetImg(grayscale)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Fprint(w, "<p>img is not available</p>")
+		h.l.Logln(err)
+		h.l.Flog(w, "<p>img is not available</p>")
 	} else {
-		fmt.Fprint(w, "<img src='"+url+"'><br>")
+		h.l.Flog(w, "<img src='"+url+"'><br>")
 	}
 
 	qt, err := h.c.GetQuote(key)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Fprint(w, "<p>...</p>")
+		h.l.Logln(err)
+		h.l.Flog(w, "<p>quote is not available</p>")
 	} else {
-		fmt.Fprint(w, qt)
+		h.l.Flog(w, qt)
 	}
 }
 

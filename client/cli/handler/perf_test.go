@@ -8,6 +8,7 @@ import (
 
 	"github.com/igorkichuk/tucows/client/cli/controller"
 	"github.com/igorkichuk/tucows/client/cli/display"
+	"github.com/igorkichuk/tucows/common"
 )
 
 func BenchmarkShowRandPost(b *testing.B) {
@@ -30,7 +31,7 @@ func BenchmarkShowRandPost(b *testing.B) {
 	h := PostHandler{
 		c: c,
 		d: d,
-		l: display.Lgr{},
+		l: common.DefaultLogger,
 	}
 
 	b.ResetTimer()
