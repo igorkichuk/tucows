@@ -31,26 +31,38 @@ func NewPostHandler(c postController) PostHandler {
 }
 
 func (h PostHandler) ShowRandomPost(grayscale bool, termWidth int, key int) {
+	imgC := make(chan interface{})
+	qtC := make(chan interface{})
+	go h.getImg(grayscale, termWidth, imgC)
+	go h.getQuote(key, qtC)
+
+	h.l.Log(<-imgC)
+	h.l.Log(<-qtC)
+}
+
+func (h PostHandler) getImg(grayscale bool, termWidth int, resC chan<- interface{}) {
 	var builder strings.Builder
 	im, err := h.c.GetImg(grayscale)
 	if im != nil {
 		defer im.Close()
 	}
 	if err != nil {
-		h.l.Log(err)
+		resC <- err
 	} else {
 		builder, err = h.d.GetDisplayString(termWidth, im)
 		if err != nil {
-			h.l.Log(err)
+			resC <- err
 		} else {
-			h.l.Log(builder.String())
+			resC <- builder.String()
 		}
 	}
+}
 
+func (h PostHandler) getQuote(key int, resC chan<- interface{}) {
 	qt, err := h.c.GetQuote(key)
 	if err != nil {
-		h.l.Log(err)
+		resC <- err
 	} else {
-		h.l.Log(qt)
+		resC <- qt
 	}
 }

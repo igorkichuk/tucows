@@ -1,12 +1,13 @@
 package handler
 
 import (
-	"github.com/igorkichuk/tucows/client/cli/controller"
-	"github.com/igorkichuk/tucows/client/cli/display"
 	"io"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/igorkichuk/tucows/client/cli/controller"
+	"github.com/igorkichuk/tucows/client/cli/display"
 )
 
 func BenchmarkShowRandPost(b *testing.B) {
